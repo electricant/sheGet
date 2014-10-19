@@ -13,7 +13,7 @@ This is the perfect behaviour for a daemon or a cron job.
 
 To add an url in the queue use 'sheget-add url [priority]'.
 
-Tp print the current status of the downloads run 'sheget -l'.
+To print the current status of the downloads run 'sheget -l'.
 
 * Installation:
 
