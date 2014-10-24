@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Simple download manager that uses wget and a database to download files.
 #
@@ -11,15 +11,15 @@
 #
 # Output download status in a clean and readable way
 #
-list () {
-	echo "Download status (sorted by priority):"
-	echo "\n# Error:"
+list() {
+	echo -e "Download status (sorted by priority):"
+	echo -e "\n# Error:"
 	sqlite3 $DB_PATH "SELECT url FROM downloads WHERE complete==-1 ORDER BY
 		priority DESC;"
-	echo "\n# Complete:"
+	echo -e "\n# Complete:"
 	sqlite3 $DB_PATH "SELECT url FROM downloads WHERE complete==1 ORDER BY
 	            priority DESC;"
-	echo "\n# Still queued:"
+	echo -e "\n# Still queued:"
 	sqlite3 $DB_PATH "SELECT url FROM downloads WHERE complete==0 ORDER BY
 	            priority DESC;"
 }

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Create the database for sheGet. The database is in the following form:
 # URL (string, primary key, unique) | priority (integer) | complete (integer)
