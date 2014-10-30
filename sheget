@@ -34,21 +34,20 @@ fi
 
 while true
 do
-	url=$(sqlite3 $DB_PATH "SELECT url FROM downloads WHERE complete==0
-                  ORDER BY priority DESC LIMIT 1;")
-	if [ -z "$url" ]; then
-      	echo Nothing to do. Sleeping.
+	
+url=$(sqlite3 $DB_PATH "SELECT url FROM downloads WHERE complete==0 
+	ORDER BY priority DESC LIMIT 1;")
+if [ -z "$url" ]; then
+	echo Nothing to do. Sleeping.
       	sleep $POLL_INTERVAL
-	fi
+else
      	
-	echo Downloading: $url
-      wget -c -nv -P $DOWNLOAD_DIR --limit-rate=$MAX_RATE $url
+wget -c -P $DOWNLOAD_DIR --limit-rate=$MAX_RATE $url
       
-      if [ $? -ne 0 ]; then
-            sqlite3 $DB_PATH "UPDATE downloads SET complete = -1 WHERE
-                  url=='$url';"
-      else  
-            sqlite3 $DB_PATH "UPDATE downloads SET complete = 1 WHERE
-                  url=='$url';"
-      fi
+if [ $? -ne 0 ]; then
+	sqlite3 $DB_PATH "UPDATE downloads SET complete = -1 WHERE url=='$url';"else
+	sqlite3 $DB_PATH "UPDATE downloads SET complete = 1 WHERE url=='$url';"
+fi
+
+fi
 done
