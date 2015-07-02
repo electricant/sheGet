@@ -42,10 +42,11 @@ if [ -z "$url" ]; then
       	sleep $POLL_INTERVAL
 else
      	
-wget -c -P $DOWNLOAD_DIR --limit-rate=$MAX_RATE $url
+wget -c -P $DOWNLOAD_DIR --limit-rate=$MAX_RATE --tries=5 --waitretry=1 $url
       
 if [ $? -ne 0 ]; then
-	sqlite3 $DB_PATH "UPDATE downloads SET complete = -1 WHERE url=='$url';"else
+	sqlite3 $DB_PATH "UPDATE downloads SET complete = -1 WHERE url=='$url';"
+else
 	sqlite3 $DB_PATH "UPDATE downloads SET complete = 1 WHERE url=='$url';"
 fi
 
