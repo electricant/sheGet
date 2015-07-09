@@ -25,6 +25,38 @@ list() {
 }
 
 #
+# Helper function for the simple API
+#
+do_api() {
+	while true
+	do
+		# listen for request and always answer with an empty body
+		req=$(printf "HTTP/1.0 204 No content\r\nServer: SheGet\r\n\r\n" | 
+			nc -l -s $LISTEN_ADDRESS -p $LISTEN_PORT)
+		# the command string (format cmd@param) is after HEAD or GET header 
+		cmd_str=$(printf "%s" "$req" | awk '/HEAD|GET/ {print $2}')
+		cmd=$(printf "%s" "$cmd_str" | awk -F '@' '{print $1}')
+		arg=$(printf "%s" "$cmd_str" | awk -F '@' '{print $2}')
+		case "$cmd" in
+		/add) # add url to downloads
+			if [ -n "$arg" ]; then
+				sheget-add $arg
+				echo ""
+				echo Added: $arg
+			else
+				echo ""
+				echo Empty address supplied.
+			fi
+			;;
+		*) # invalid option
+			echo ""
+			echo "Invalid option:"  $cmd
+			;;
+		esac
+	done
+}
+
+#
 # MAIN
 #
 if [ "$1" = "-l" ]; then
@@ -32,9 +64,13 @@ if [ "$1" = "-l" ]; then
 	exit
 fi
 
+# stop running jobs on exit (if any)
+trap 'kill $(jobs -pr); exit' SIGINT SIGTERM EXIT
+# start api listener
+do_api &
+
 while true
-do
-	
+do	
 url=$(sqlite3 $DB_PATH "SELECT url FROM downloads WHERE complete==0 
 	ORDER BY priority DESC LIMIT 1;")
 if [ -z "$url" ]; then
